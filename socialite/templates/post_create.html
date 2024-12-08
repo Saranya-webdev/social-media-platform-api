@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Post{% endblock %}
+
+{% block content %}
+<div class="create-post-container">
+    <h2 class="page-title">Create a New Post</h2>
+
+    <form method="post" enctype="multipart/form-data" class="create-post-form">
+        {% csrf_token %}
+
+        <!-- Content Input -->
+        <div class="form-group">
+            <label for="id_content" class="form-label">Content:</label>
+            <textarea name="content" id="id_content" rows="4" class="form-control" required></textarea>
+            {% if form.content.errors %}
+                <ul class="error-list">
+                    {% for error in form.content.errors %}
+                        <li class="error-item">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Image Input -->
+        <div class="form-group">
+            <label for="id_image" class="form-label">Image:</label>
+            <input type="file" name="image" id="id_image" accept="image/*" class="form-control-file">
+            {% if form.image.errors %}
+                <ul class="error-list">
+                    {% for error in form.image.errors %}
+                        <li class="error-item">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary submit-btn">Create Post</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }}'s Followers</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">{{ user.username }}'s Followers</h1>
+        <ul class="followers-list">
+            {% for follow in followers %}
+                <li class="follower-item">
+                    <img src="{{ follow.profile_picture.url|default_if_none:'/static/images/default.png' }}" alt="Profile Picture" class="profile-image">
+                    <a href="{% url 'user_profile' follow.user.id %}" class="follower-username">{{ follow.user.username }}</a>
+                    
+                    {% if follow.user != request.user %}
+                        <form method="post" action="{% url 'follow_user' follow.user.id %}" class="follow-form">
+                            {% csrf_token %}
+                            {% if follow.user in request.user.profile.following.all %}
+                                <button type="submit" class="follow-button unfollow-button">Unfollow</button>
+                            {% else %}
+                                <button type="submit" class="follow-button follow-button">Follow</button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <p class="no-followers">No followers yet.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

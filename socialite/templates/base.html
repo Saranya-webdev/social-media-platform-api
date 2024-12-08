@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Social Media{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-users"></i> <i><a href="{% url 'home' %}">Socialite</a></i>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'home' %}" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="{% url 'post_create' %}" class="nav-item"><i class="fas fa-plus"></i> New Post</a>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'user_profile' user.id %}" class="nav-item">
+                    {% if profile_picture %}
+                        <img src="{{ profile_picture }}" alt="{{ user.username }}'s Profile Picture" class="profile-image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                    {% else %}
+                        <img src="{% static 'images/default.png' %}" alt="Default Profile Picture" class="profile-image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                    {% endif %}
+                        My Profile
+                    </a>
+                    <a href="{% url 'logout' %}" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-item"><i class="fas fa-sign-in-alt"></i> Login</a>
+                {% endif %}
+                <hr>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}
+            <!-- Content will be inserted here -->
+            {% endblock %}
+        </main>
+
+        <!-- Right Sidebar -->
+<aside class="right-sidebar">
+    {% if user.is_authenticated %}
+    <p class="welcome-message">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}'s Profile Picture" class="profile-image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" alt="Default Profile Picture" class="profile-image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+        {% endif %}
+        {{ user.username }}!
+        <a href="{% url 'update_userprofile' %}">Edit Profile</a>
+    </p>
+    {% endif %}
+    <h3>Suggested for you</h3>
+    <ul>
+        {% if authors %}
+            {% for author in authors %}
+                {% if user not in author.profile.following.all %}
+                    <li>
+                        <a href="{% url 'user_profile' author.id %}">
+                            {% if author.profile.profile_picture %}
+                                <img src="{{ author.profile.profile_picture.url }}" alt="{{ author.username }}'s Profile Picture" class="suggestion-profile-img">
+                            {% else %}
+                                <img src="{% static 'images/default.png' %}" alt="Default Profile Picture" class="suggestion-profile-img">
+                            {% endif %}
+                            {{ author.username }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No suggestions at this time.</p>
+        {% endif %}
+    </ul>
+</aside>
+    </div>
+
+    <footer>
+        {% block footer %}
+        <p>&copy; 2024 Social Media Platform</p>
+        {% endblock %}
+    </footer>
+</body>
+
+</html>

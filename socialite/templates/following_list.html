@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }}'s Following</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="follow-container">
+        <h1 class="page-title">{{ user.username }}'s Following</h1>
+        <ul class="following-list">
+            {% for followed in following %}
+            <li class="following-item">
+                <div class="followed-info">
+                    <img src="{{ followed.profile_picture.url|default_if_none:'/static/images/default.png' }}" alt="Profile Picture" class="profile-image">
+                    <a href="{% url 'user_profile' followed.user.id %}" class="followed-username">{{ followed.user.username }}</a>
+                </div>
+                <form method="post" action="{% url 'unfollow_user' followed.user.id %}" class="unfollow-form">
+                    {% csrf_token %}
+                    <button type="submit" class="unfollow-button">Unfollow</button>
+                </form>
+            </li>
+            {% empty %}
+                <p class="no-following">You are not following anyone yet.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

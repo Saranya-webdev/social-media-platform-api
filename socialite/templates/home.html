@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="feed-container">
+    <!-- Heading -->
+    <h2 id="latest-post">Latest Posts</h2>
+
+    {% if page_obj %}
+        {% for post in page_obj %}
+            <article class="post-card">
+                <!-- Author Info -->
+                <div class="author-info">
+                    <a href="{% url 'user_profile' post.author.id %}" class="author-link">
+                        {% if post.author.profile.profile_picture %}
+                            <img src="{{ post.author.profile.profile_picture.url }}" 
+                                 alt="{{ post.author.username }}" class="author-img">
+                        {% else %}
+                            <img src="{% static 'images/default.png' %}" alt="Default Profile" class="author-img">
+                        {% endif %}
+                        <strong>{{ post.author.username }}</strong>
+                    </a>
+                    <span class="timestamp">{{ post.created_at|timesince }} ago</span>
+                </div>
+
+                <!-- Post Image (No Rounded Box) -->
+                {% if post.image %}
+                    <a href="{% url 'post_detail' post.id %}" title="{{ post.title }}">
+                        <img src="{{ post.image.url }}" alt="Image for {{ post.title }}" class="post-thumbnail">
+                    </a>
+                {% else %}
+                    <a href="{% url 'post_detail' post.id %}" title="{{ post.title }}">
+                        <img src="{% static 'images/default.png' %}" alt="Default Image" class="post-thumbnail">
+                    </a>
+                {% endif %}
+
+                <!-- Post Title -->
+                <h3 class="post-title">
+                    <a href="{% url 'post_detail' post.id %}" title="{{ post.title }}">{{ post.title }}</a>
+                </h3>
+
+                <!-- Post Content -->
+                <p class="post-snippet">
+                    <a href="{% url 'post_detail' post.id %}" title="{{ post.content }}">
+                        {{ post.content|truncatewords:40 }}...
+                    </a>
+                </p>
+
+                <!-- Post Stats -->
+                <div class="post-stats">
+                    <a href="{% url 'toggle_like_post' post.id %}" class="like-btn">
+                        <i class="fa-regular fa-heart like-icon"></i> {{ post.likes.count }}
+                    </a>
+                    <a href="{% url 'post-add_comment' post.id %}" class="comment-btn">
+                        <i class="fa-regular fa-comment comment-icon"></i> {{ post.comments.count }}
+                    </a>
+                </div>
+            </article>
+            <!-- Separator -->
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p class="no-posts">
+            Be the first to share something! <a href="{% url 'create_post' %}">Create a post</a>.
+        </p>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+<nav class="pagination-container">
+    {% if page_obj.has_previous %}
+        <a href="?page=1" class="pagination-btn">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Previous</a>
+    {% endif %}
+    <span class="pagination-current">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn">Last &raquo;</a>
+    {% endif %}
+</nav>
+
+{% endblock %}
